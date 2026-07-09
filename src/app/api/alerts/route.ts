@@ -1,6 +1,7 @@
 import 'server-only';
 import { ensureJobAlertSchema } from '@/lib/alerts/ensure-schema';
 import { normalizeAlertInput, serializeJobAlert } from '@/lib/alerts/normalize';
+import { hasAlertCriteria } from '@/lib/alerts/search-requests';
 import { AlertCreate, AlertResponse, AlertsListResponse } from '@/lib/contracts/alerts';
 import { prisma } from '@/lib/db';
 import { requireAuth, type SessionUser } from '@/lib/require-auth';
@@ -48,6 +49,13 @@ export async function POST(req: Request) {
   }
 
   const data = normalizeAlertInput(parsed.data);
+  if (!hasAlertCriteria(data)) {
+    return Response.json(
+      { error: 'Add at least one company, field, or location to create an alert.' },
+      { status: 400 },
+    );
+  }
+
   try {
     await ensureJobAlertSchema();
     const row = await prisma.jobAlert.create({

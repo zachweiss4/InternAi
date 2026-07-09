@@ -233,7 +233,7 @@ export function ProfileIsland() {
               Resume
             </CardTitle>
             <CardDescription>
-              Upload a PDF or DOCX — we&apos;ll extract the text automatically
+              Upload a PDF or DOCX - we&apos;ll extract the text automatically
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-4">
@@ -329,7 +329,10 @@ export function ProfileIsland() {
                 <div className="space-y-3">
                   <p className="text-sm font-semibold text-foreground">Suggested bullet changes</p>
                   {resumeAnalysis.rewrites.slice(0, 3).map((rewrite, index) => (
-                    <div key={`${rewrite.before}-${index}`} className="rounded-lg border border-border/70 p-3 text-sm">
+                    <div
+                      key={`${rewrite.before}-${index}`}
+                      className="rounded-lg border border-border/70 p-3 text-sm"
+                    >
                       <p className="text-muted-foreground line-through">{rewrite.before}</p>
                       <p className="mt-2 font-medium text-foreground">{rewrite.after}</p>
                       <p className="mt-1 text-xs text-muted-foreground">{rewrite.reason}</p>
@@ -340,7 +343,9 @@ export function ProfileIsland() {
 
               {resumeAnalysis.recommendedSearches.length > 0 && (
                 <div className="space-y-3">
-                  <p className="text-sm font-semibold text-foreground">Recommended internship searches</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    Recommended internship searches
+                  </p>
                   <div className="grid gap-2">
                     {resumeAnalysis.recommendedSearches.slice(0, 5).map((rec) => (
                       <Link

@@ -30,7 +30,7 @@ export function InternAIHero() {
 
             <p className="text-body-lg text-muted-foreground max-w-lg leading-relaxed">
               Stop spending hours on job boards. Tell InternAI what you&apos;re looking for in plain
-              language — and let AI handle the rest, from searching to tailoring applications to
+              language - and let AI handle the rest, from searching to tailoring applications to
               tracking deadlines.
             </p>
 
@@ -48,7 +48,7 @@ export function InternAIHero() {
             </p>
           </div>
 
-          {/* Right: visual — animated search card */}
+          {/* Right: visual - animated search card */}
           <div className="relative">
             <div className="relative z-10 rounded-xl border bg-card p-6 shadow-xl">
               {/* Simulated search interface */}
@@ -92,7 +92,7 @@ export function InternAIHero() {
                   <div className="flex items-center justify-between rounded-lg bg-muted/40 border border-border/40 p-3">
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-muted-foreground" />
-                      <span className="text-sm">Finance Intern — Goldman Sachs</span>
+                      <span className="text-sm">Finance Intern - Goldman Sachs</span>
                     </div>
                     <Badge variant="secondary" className="text-xs">
                       71% match

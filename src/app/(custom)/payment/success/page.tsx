@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { PaymentSuccessIsland } from './payment-success-island';
 
 export const metadata: Metadata = {
-  title: 'Payment Processing — InternAI',
+  title: 'Payment Processing - InternAI',
   description: 'Confirming your InternAI subscription…',
 };
 

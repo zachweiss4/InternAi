@@ -34,7 +34,7 @@ const FAQS = [
   {
     question: 'Is my data secure?',
     answer:
-      'Yes. Your resume and personal information are encrypted at rest and in transit. InternAI only uses your data to power your own job search — it never shares your information with employers or third parties without your explicit consent.',
+      'Yes. Your resume and personal information are encrypted at rest and in transit. InternAI only uses your data to power your own job search - it never shares your information with employers or third parties without your explicit consent.',
   },
   {
     question: 'How much does InternAI cost?',

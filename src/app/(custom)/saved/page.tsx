@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SavedIsland } from './saved-island';
 
 export const metadata: Metadata = {
-  title: 'Saved Internships — InternAI',
+  title: 'Saved Internships - InternAI',
   description: 'Bookmark internships you are interested in.',
 };
 

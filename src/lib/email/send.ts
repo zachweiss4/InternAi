@@ -15,7 +15,7 @@ export interface SendEmailInput {
 
 export interface SendEmailResult {
   // company_emails id of the stored outbound message. Empty string when the recipient was
-  // suppressed (unsubscribed/bounced) — the proxy accepted the call but sent nothing.
+  // suppressed (unsubscribed/bounced) - the proxy accepted the call but sent nothing.
   id: string;
 }
 

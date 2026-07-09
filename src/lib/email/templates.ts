@@ -1,13 +1,13 @@
-// @:user-owned — your email templates. Edit, add, or delete freely.
+// @:user-owned - your email templates. Edit, add, or delete freely.
 // Each template returns { subject, html, text }; send it via the framework transport:
 //   import { sendEmail } from '@/lib/email/send';
 //   import { welcomeEmail } from '@/lib/email/templates';
 //   await sendEmail({ to: user.email, ...welcomeEmail({ name: user.name }) });
-// renderEmail() is a plain inline-styled shell — email clients drop <style>/<link>, so style inline.
+// renderEmail() is a plain inline-styled shell - email clients drop <style>/<link>, so style inline.
 // renderEmail() auto-escapes its heading/body/cta/footer, so pass RAW values (don't escapeHtml() them
-// first — that double-escapes). escapeHtml() is only for when you hand-build an html string yourself.
+// first - that double-escapes). escapeHtml() is only for when you hand-build an html string yourself.
 
-/** Subject + rendered bodies — spread into sendEmail({ to, ... }). */
+/** Subject + rendered bodies - spread into sendEmail({ to, ... }). */
 export interface EmailContent {
   subject: string;
   html: string;
@@ -66,7 +66,7 @@ export function renderEmail(options: RenderEmailOptions): { html: string; text: 
   return { html, text };
 }
 
-// ─── Example templates — edit / add / remove to fit the app ───
+// ─── Example templates - edit / add / remove to fit the app ───
 
 /** Welcome email for a new signup. */
 export function welcomeEmail(input: { name: string; ctaUrl?: string }): EmailContent {
@@ -81,7 +81,7 @@ export function welcomeEmail(input: { name: string; ctaUrl?: string }): EmailCon
       : { label: 'Search internships →', url: 'https://internai.app/search' },
     footer: 'You received this because you created an InternAI account.',
   });
-  return { subject: 'Welcome to InternAI — start your search', html, text };
+  return { subject: 'Welcome to InternAI - start your search', html, text };
 }
 
 /** Generic notification email. */
@@ -95,7 +95,7 @@ export function notificationEmail(input: {
   return { subject: input.subject, html, text };
 }
 
-/** Job alert notification email — lists matching internships. */
+/** Job alert notification email - lists matching internships. */
 export function jobAlertEmail(input: {
   name: string;
   field: string | null;
@@ -164,8 +164,7 @@ export function jobAlertEmail(input: {
       ),
     ],
     cta: { label: 'Search more internships →', url: searchUrl },
-    footer:
-      'You received this because you have a job alert set up on InternAI.',
+    footer: 'You received this because you have a job alert set up on InternAI.',
   });
 
   return { subject, html, text };

@@ -9,13 +9,13 @@ const FEATURES = [
   {
     title: 'Smart Search Across the Web',
     description:
-      'InternAI scours company career pages, job boards, and university portals — then filters based on your major, skills, and salary requirements.',
+      'InternAI scours company career pages, job boards, and university portals - then filters based on your major, skills, and salary requirements.',
     icon: 'search',
   },
   {
     title: 'AI Resume Scoring',
     description:
-      'Every posting gets scored against your resume in real time. Know exactly where you stand before you apply — no more guesswork.',
+      'Every posting gets scored against your resume in real time. Know exactly where you stand before you apply - no more guesswork.',
     icon: 'score',
   },
   {
@@ -27,7 +27,7 @@ const FEATURES = [
   {
     title: 'Auto-Fill Applications',
     description:
-      'One click fills out long application forms across different portals. Spend time on the things that matter — not data entry.',
+      'One click fills out long application forms across different portals. Spend time on the things that matter - not data entry.',
     icon: 'form',
   },
   {
@@ -39,7 +39,7 @@ const FEATURES = [
   {
     title: 'Personal Pipeline Dashboard',
     description:
-      'A single view of every opportunity — status, match score, deadline, and next action — organized and always up to date.',
+      'A single view of every opportunity - status, match score, deadline, and next action - organized and always up to date.',
     icon: 'dashboard',
   },
 ];
@@ -56,7 +56,7 @@ export function InternAIFeatures() {
             Everything you need to land the right internship
           </h2>
           <p className="mt-3 text-body-lg text-muted-foreground">
-            From first search to submitted application — automated, personalized, and designed to
+            From first search to submitted application - automated, personalized, and designed to
             give you a real competitive edge.
           </p>
         </div>

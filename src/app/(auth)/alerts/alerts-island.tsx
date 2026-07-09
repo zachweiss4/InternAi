@@ -216,6 +216,33 @@ function seasonLabel(value: AlertSeasonType | null): string {
   return SEASON_OPTIONS.find((option) => option.value === value)?.label ?? 'Any season';
 }
 
+function hasCriteria(
+  companies: string[],
+  fields: string[],
+  locations: string[],
+  ...inputs: string[]
+) {
+  return (
+    companies.length > 0 ||
+    fields.length > 0 ||
+    locations.length > 0 ||
+    inputs.some((input) => input.trim().length > 0)
+  );
+}
+
+function errorMessage(error: unknown, fallback: string): string {
+  if (
+    error instanceof Error &&
+    typeof error.cause === 'object' &&
+    error.cause &&
+    'error' in error.cause &&
+    typeof error.cause.error === 'string'
+  ) {
+    return error.cause.error;
+  }
+  return fallback;
+}
+
 function TokenPicker({
   label,
   selectPlaceholder,
@@ -323,6 +350,14 @@ export function AlertsIsland() {
   const [editSeason, setEditSeason] = useState<AlertSeasonType | null>(null);
   const [editTimeframe, setEditTimeframe] = useState<AlertTimeframeType>('daily');
   const [savingId, setSavingId] = useState<string | null>(null);
+  const canCreate = hasCriteria(
+    companyNames,
+    fieldNames,
+    locations,
+    companyInput,
+    fieldInput,
+    locationInput,
+  );
 
   useEffect(() => {
     if (isPending) return;
@@ -372,8 +407,8 @@ export function AlertsIsland() {
       setAlerts((prev) => [newAlert, ...prev]);
       resetCreateForm();
       toast.success('Alert created');
-    } catch {
-      toast.error('Failed to create alert');
+    } catch (error) {
+      toast.error(errorMessage(error, 'Failed to create alert'));
     } finally {
       setCreating(false);
     }
@@ -420,8 +455,8 @@ export function AlertsIsland() {
       setAlerts((prev) => prev.map((alert) => (alert.id === id ? updatedAlert : alert)));
       setEditingId(null);
       toast.success('Alert updated');
-    } catch {
-      toast.error('Failed to update alert');
+    } catch (error) {
+      toast.error(errorMessage(error, 'Failed to update alert'));
     } finally {
       setSavingId(null);
     }
@@ -488,7 +523,9 @@ export function AlertsIsland() {
               <Plus className="size-4 text-brand-500" />
               New alert
             </CardTitle>
-            <CardDescription>Watch several companies, fields, and locations in one alert</CardDescription>
+            <CardDescription>
+              Watch several companies, fields, and locations in one alert
+            </CardDescription>
           </CardHeader>
           <CardContent className="pt-4 space-y-4">
             <TokenPicker
@@ -578,7 +615,12 @@ export function AlertsIsland() {
               </Select>
             </div>
 
-            <Button type="button" className="w-full" onClick={createAlert} disabled={creating}>
+            <Button
+              type="button"
+              className="w-full"
+              onClick={createAlert}
+              disabled={creating || !canCreate}
+            >
               <Bell className="size-4 mr-2" />
               {creating ? 'Creating...' : 'Create Alert'}
             </Button>
@@ -616,9 +658,7 @@ export function AlertsIsland() {
                         inputValue={editCompanyInput}
                         setSelectedValue={setEditSelectedCompany}
                         setInputValue={setEditCompanyInput}
-                        addValue={(value) =>
-                          setEditCompanyNames((prev) => addUnique(prev, value))
-                        }
+                        addValue={(value) => setEditCompanyNames((prev) => addUnique(prev, value))}
                         removeValue={(value) =>
                           setEditCompanyNames((prev) => prev.filter((name) => name !== value))
                         }
@@ -682,9 +722,7 @@ export function AlertsIsland() {
                         <Label>Timeframe</Label>
                         <Select
                           value={editTimeframe}
-                          onValueChange={(value) =>
-                            setEditTimeframe(value as AlertTimeframeType)
-                          }
+                          onValueChange={(value) => setEditTimeframe(value as AlertTimeframeType)}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Choose timeframe" />
@@ -704,7 +742,17 @@ export function AlertsIsland() {
                           type="button"
                           className="flex-1"
                           onClick={() => saveAlert(alert.id)}
-                          disabled={savingId === alert.id}
+                          disabled={
+                            savingId === alert.id ||
+                            !hasCriteria(
+                              editCompanyNames,
+                              editFieldNames,
+                              editLocations,
+                              editCompanyInput,
+                              editFieldInput,
+                              editLocationInput,
+                            )
+                          }
                         >
                           <Save className="size-4 mr-2" />
                           {savingId === alert.id ? 'Saving...' : 'Save'}

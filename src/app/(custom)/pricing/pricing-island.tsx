@@ -244,7 +244,7 @@ export function PricingIsland() {
           <div>
             <p className="font-semibold mb-1">What happens to my free searches after upgrading?</p>
             <p className="text-muted-foreground">
-              Paid plans have unlimited searches — the daily free quota no longer applies.
+              Paid plans have unlimited searches - the daily free quota no longer applies.
             </p>
           </div>
           <div>

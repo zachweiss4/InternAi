@@ -1,4 +1,4 @@
-// @:user-owned — seeded by /modules/better-auth; restyle freely.
+// @:user-owned - seeded by /modules/better-auth; restyle freely.
 
 import { SignUpForm } from '@/components/custom/sign-up-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +14,7 @@ export default function SignupPage() {
       <Card className="relative w-full max-w-md shadow-brand border border-border/60 bg-card/95 backdrop-blur-sm">
         <CardHeader className="text-center pb-2">
           <CardTitle className="text-h4">Create an account</CardTitle>
-          <CardDescription>Get started — it&apos;s free</CardDescription>
+          <CardDescription>Get started - it&apos;s free</CardDescription>
         </CardHeader>
         <CardContent className="pt-4">
           <SignUpForm />

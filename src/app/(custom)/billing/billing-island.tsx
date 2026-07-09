@@ -12,7 +12,7 @@ import { apiFetch } from '@/lib/api-client';
 import { type SubscriptionStatus, SubscriptionStatusSchema } from '@/lib/contracts/subscription';
 
 function formatDate(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   return new Date(iso).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -109,7 +109,7 @@ export function BillingIsland() {
 
           {!isPaid && (
             <div className="rounded-lg border border-brand-200 bg-brand-50/50 p-4 text-sm text-brand-800">
-              You&apos;re on the Free plan — 3 searches per day. Upgrade for unlimited access.
+              You&apos;re on the Free plan - 3 searches per day. Upgrade for unlimited access.
             </div>
           )}
         </CardContent>

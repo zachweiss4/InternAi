@@ -10,13 +10,13 @@ const STEPS = [
     number: '01',
     title: 'Describe what you want',
     description:
-      'Tell InternAI about your ideal role in plain language — "Find me marketing internships in Chicago, $20/hr+, Fortune 500 only." The AI understands your preferences, majors, skills, and salary floor.',
+      'Tell InternAI about your ideal role in plain language - "Find me marketing internships in Chicago, $20/hr+, Fortune 500 only." The AI understands your preferences, majors, skills, and salary floor.',
   },
   {
     number: '02',
     title: 'AI builds your pipeline',
     description:
-      'InternAI searches across company websites, job boards, and university portals — then scores every result against your resume, filters out the noise, and surfaces only the best-fit opportunities.',
+      'InternAI searches across company websites, job boards, and university portals - then scores every result against your resume, filters out the noise, and surfaces only the best-fit opportunities.',
   },
   {
     number: '03',

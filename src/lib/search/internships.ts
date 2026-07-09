@@ -51,7 +51,7 @@ export interface SearchProfile {
   sponsorshipRequired?: boolean | null;
 }
 
-interface SearchOptions {
+export interface SearchOptions {
   query: string;
   location?: string | null;
   company?: string | null;

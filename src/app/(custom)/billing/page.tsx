@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { BillingIsland } from './billing-island';
 
 export const metadata: Metadata = {
-  title: 'Billing — InternAI',
+  title: 'Billing - InternAI',
   description: 'Manage your InternAI subscription plan and billing details.',
 };
 

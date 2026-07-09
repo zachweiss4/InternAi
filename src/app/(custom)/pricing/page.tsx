@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { PricingIsland } from './pricing-island';
 
 export const metadata: Metadata = {
-  title: 'Pricing — InternAI',
+  title: 'Pricing - InternAI',
   description:
     'Simple, transparent pricing for AI-powered internship search. Start free, upgrade when you need unlimited access.',
 };

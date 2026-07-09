@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
   const ext = `.${(file.name.split('.').pop() ?? '').toLowerCase()}`;
   if (!ALLOWED_EXTENSIONS.includes(ext)) {
-    return NextResponse.json({ error: 'Invalid file type — PDF or DOCX only' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid file type - PDF or DOCX only' }, { status: 400 });
   }
 
   if (file.type && !ALLOWED_TYPES.includes(file.type)) {

@@ -472,7 +472,7 @@ export function SearchIsland() {
           setAppliedJobIds(new Set(appliedData.applications.map((a) => a.jobId)));
         }
       } catch {
-        // Not logged in — silently skip
+        // Not logged in - silently skip
       }
     }
     load();
@@ -728,7 +728,7 @@ export function SearchIsland() {
             <>
               <p className="text-h4 font-semibold text-foreground">Sign in to search internships</p>
               <p className="text-body text-muted-foreground">
-                Create a free account to get 3 searches per day — or upgrade for unlimited access.
+                Create a free account to get 3 searches per day - or upgrade for unlimited access.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <Button asChild>

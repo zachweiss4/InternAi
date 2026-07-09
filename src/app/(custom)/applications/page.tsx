@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ApplicationsIsland } from './applications-island';
 
 export const metadata: Metadata = {
-  title: 'My Applications — InternAI',
+  title: 'My Applications - InternAI',
   description: 'Track the internships you have applied to.',
 };
 

@@ -1,15 +1,16 @@
 import 'server-only';
 import { ensureJobAlertSchema } from '@/lib/alerts/ensure-schema';
-import { uniqueTrimmed } from '@/lib/alerts/normalize';
+import {
+  alertFields,
+  alertLocations,
+  buildAlertSearchRequests,
+} from '@/lib/alerts/search-requests';
 import { assertCronAuthorized } from '@/lib/cron';
 import { prisma } from '@/lib/db';
 import { sendEmail } from '@/lib/email/send';
 import { jobAlertEmail } from '@/lib/email/templates';
 import { env } from '@/lib/env';
-import {
-  searchInternships,
-  type InternshipSearchResult,
-} from '@/lib/search/internships';
+import { searchInternships, type InternshipSearchResult } from '@/lib/search/internships';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -23,14 +24,6 @@ const TIMEFRAME_DAYS: Record<string, number> = {
   three_days: 3,
   weekly: 7,
 };
-
-function alertFields(alert: { field: string | null; fieldNames?: string[] }): string[] {
-  return uniqueTrimmed([...(alert.fieldNames ?? []), alert.field ?? '']);
-}
-
-function alertLocations(alert: { location: string | null; locations?: string[] }): string[] {
-  return uniqueTrimmed([...(alert.locations ?? []), alert.location ?? '']);
-}
 
 function dedupeJobs(jobs: InternshipSearchResult[]): InternshipSearchResult[] {
   const seen = new Map<string, InternshipSearchResult>();
@@ -55,7 +48,10 @@ function searchUrlForAlert(alert: {
   const fields = alertFields(alert);
   const locations = alertLocations(alert);
   const params = new URLSearchParams({
-    q: `${fields[0] ?? 'internship'} internship`.replace(/\binternship internship\b/i, 'internship'),
+    q: `${fields[0] ?? 'internship'} internship`.replace(
+      /\binternship internship\b/i,
+      'internship',
+    ),
     sort: 'newest',
   });
   if (locations[0]) params.set('location', locations[0]);
@@ -73,50 +69,9 @@ async function fetchAlertJobs(alert: {
   season: string | null;
   companyNames: string[];
 }): Promise<InternshipSearchResult[]> {
-  const fields = alertFields(alert);
-  const locations = alertLocations(alert);
-  const searchLocations = locations.length > 0 ? locations : [null];
-  const season = alert.season === 'summer' || alert.season === 'fall' ? alert.season : null;
-  const searches: Promise<InternshipSearchResult[]>[] = [];
-
-  for (const location of searchLocations) {
-    for (const field of fields) {
-      searches.push(
-        searchInternships({
-          query: field,
-          location,
-          season,
-          sort: 'newest',
-          limit: ALERT_RESULT_LIMIT,
-        }),
-      );
-    }
-
-    for (const company of alert.companyNames) {
-      searches.push(
-        searchInternships({
-          query: 'internship',
-          location,
-          company,
-          season,
-          sort: 'newest',
-          limit: ALERT_RESULT_LIMIT,
-        }),
-      );
-    }
-  }
-
-  if (searches.length === 0) {
-    searches.push(
-      searchInternships({
-        query: 'internship',
-        location: null,
-        season,
-        sort: 'newest',
-        limit: ALERT_RESULT_LIMIT,
-      }),
-    );
-  }
+  const searches = buildAlertSearchRequests(alert, ALERT_RESULT_LIMIT).map((request) =>
+    searchInternships(request),
+  );
 
   const settled = await Promise.allSettled(searches);
 
@@ -157,85 +112,97 @@ export async function GET(req: Request) {
 
   let sent = 0;
   let initialized = 0;
+  let checked = 0;
+  let skipped = 0;
+  let errors = 0;
   for (const alert of allAlerts) {
-    const timeframeDays = TIMEFRAME_DAYS[alert.timeframe] ?? 1;
-    if (alert.lastCheckedAt && Date.now() - alert.lastCheckedAt.getTime() < timeframeDays * DAY_MS) {
-      continue;
-    }
+    try {
+      const timeframeDays = TIMEFRAME_DAYS[alert.timeframe] ?? 1;
+      if (
+        alert.lastCheckedAt &&
+        Date.now() - alert.lastCheckedAt.getTime() < timeframeDays * DAY_MS
+      ) {
+        skipped++;
+        continue;
+      }
+      checked++;
 
-    const user = userMap.get(alert.userId);
-    if (!user?.email) {
-      await prisma.jobAlert.update({
-        where: { id: alert.id },
-        data: { lastCheckedAt: new Date() },
+      const user = userMap.get(alert.userId);
+      if (!user?.email) {
+        await prisma.jobAlert.update({
+          where: { id: alert.id },
+          data: { lastCheckedAt: new Date() },
+        });
+        continue;
+      }
+
+      const jobs = await fetchAlertJobs(alert);
+      if (jobs.length === 0) {
+        await prisma.jobAlert.update({
+          where: { id: alert.id },
+          data: { lastCheckedAt: new Date() },
+        });
+        continue;
+      }
+
+      const alreadySent = await prisma.jobAlertSentJob.findMany({
+        where: { alertId: alert.id },
+        select: { jobId: true },
       });
-      continue;
-    }
+      const alreadySentIds = new Set(alreadySent.map((job) => job.jobId));
+      const newJobs = jobs.filter((job) => !alreadySentIds.has(job.id));
 
-    const jobs = await fetchAlertJobs(alert);
-    if (jobs.length === 0) {
-      await prisma.jobAlert.update({
-        where: { id: alert.id },
-        data: { lastCheckedAt: new Date() },
+      if (!alert.lastCheckedAt) {
+        await prisma.jobAlertSentJob.createMany({
+          data: seenJobRows(alert.id, jobs),
+          skipDuplicates: true,
+        });
+        await prisma.jobAlert.update({
+          where: { id: alert.id },
+          data: { lastCheckedAt: new Date() },
+        });
+        initialized++;
+        continue;
+      }
+
+      if (newJobs.length === 0) {
+        await prisma.jobAlert.update({
+          where: { id: alert.id },
+          data: { lastCheckedAt: new Date() },
+        });
+        continue;
+      }
+
+      const searchUrl = searchUrlForAlert(alert);
+      await sendEmail({
+        to: user.email,
+        ...jobAlertEmail({
+          name: user.name ?? 'there',
+          field: alert.field,
+          fieldNames: alertFields(alert),
+          companyNames: alert.companyNames,
+          location: alert.location,
+          locations: alertLocations(alert),
+          season: alert.season,
+          jobs: newJobs.slice(0, 5),
+          searchUrl,
+        }),
       });
-      continue;
-    }
 
-    const alreadySent = await prisma.jobAlertSentJob.findMany({
-      where: { alertId: alert.id },
-      select: { jobId: true },
-    });
-    const alreadySentIds = new Set(alreadySent.map((job) => job.jobId));
-    const newJobs = jobs.filter((job) => !alreadySentIds.has(job.id));
-
-    if (!alert.lastCheckedAt) {
       await prisma.jobAlertSentJob.createMany({
-        data: seenJobRows(alert.id, jobs),
+        data: seenJobRows(alert.id, newJobs),
         skipDuplicates: true,
       });
+
       await prisma.jobAlert.update({
         where: { id: alert.id },
-        data: { lastCheckedAt: new Date() },
+        data: { lastCheckedAt: new Date(), lastNotifiedAt: new Date() },
       });
-      initialized++;
-      continue;
+      sent++;
+    } catch {
+      errors++;
     }
-
-    if (newJobs.length === 0) {
-      await prisma.jobAlert.update({
-        where: { id: alert.id },
-        data: { lastCheckedAt: new Date() },
-      });
-      continue;
-    }
-
-    const searchUrl = searchUrlForAlert(alert);
-    await sendEmail({
-      to: user.email,
-      ...jobAlertEmail({
-        name: user.name ?? 'there',
-        field: alert.field,
-        fieldNames: alertFields(alert),
-        companyNames: alert.companyNames,
-        location: alert.location,
-        locations: alertLocations(alert),
-        season: alert.season,
-        jobs: newJobs.slice(0, 5),
-        searchUrl,
-      }),
-    });
-
-    await prisma.jobAlertSentJob.createMany({
-      data: seenJobRows(alert.id, newJobs),
-      skipDuplicates: true,
-    });
-
-    await prisma.jobAlert.update({
-      where: { id: alert.id },
-      data: { lastCheckedAt: new Date(), lastNotifiedAt: new Date() },
-    });
-    sent++;
   }
 
-  return Response.json({ sent, checked: allAlerts.length, initialized });
+  return Response.json({ sent, checked, total: allAlerts.length, skipped, initialized, errors });
 }
