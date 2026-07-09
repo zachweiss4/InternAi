@@ -7,6 +7,7 @@ let hasExplicitInternshipListingSignal: typeof import('@/lib/search/internships'
 let extractGoogleDetailResult: typeof import('@/lib/search/internships').extractGoogleDetailResult;
 let isActionablePosting: typeof import('@/lib/search/internships').isActionablePosting;
 let isSpecificJobUrl: typeof import('@/lib/search/internships').isSpecificJobUrl;
+let inferEmployerFromUrl: typeof import('@/lib/search/internships').inferEmployerFromUrl;
 let mapTheirStackJob: typeof import('@/lib/search/internships').mapTheirStackJob;
 let workdayJobMatchesSearch: typeof import('@/lib/search/internships').workdayJobMatchesSearch;
 
@@ -14,6 +15,7 @@ beforeAll(async () => {
   ({
     extractGoogleDetailResult,
     hasExplicitInternshipListingSignal,
+    inferEmployerFromUrl,
     isActionablePosting,
     isSpecificJobUrl,
     mapTheirStackJob,
@@ -181,5 +183,18 @@ describe('individual listing validation', () => {
         },
       ),
     ).toBe(false);
+  });
+
+  it('identifies the employer behind Workday URLs', () => {
+    expect(
+      inferEmployerFromUrl(
+        'https://capitalone.wd12.myworkdayjobs.com/en-US/Capital_One/job/Product-Intern_R123',
+      ),
+    ).toBe('Capital One');
+    expect(
+      inferEmployerFromUrl(
+        'https://travelers.wd5.myworkdayjobs.com/en-US/External/job/Product-Intern_R456',
+      ),
+    ).toBe('Travelers');
   });
 });

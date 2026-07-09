@@ -2181,7 +2181,11 @@ function stableId(
 function canonicalPostingUrl(rawUrl: string): string | null {
   try {
     const url = new URL(rawUrl);
-    const pathname = url.pathname.replace(/\/+$/, '') || '/';
+    const isWorkday = /(?:^|\.)myworkdayjobs\.com$/i.test(url.hostname);
+    const normalizedPath = isWorkday
+      ? url.pathname.replace(/^\/[a-z]{2}-[a-z]{2}\//i, '/')
+      : url.pathname;
+    const pathname = normalizedPath.replace(/\/+$/, '') || '/';
     return `${url.hostname.replace(/^www\./, '').toLowerCase()}${pathname.toLowerCase()}`;
   } catch {
     return null;
@@ -2522,7 +2526,11 @@ async function searchWebResults(
       if (!applyUrl || !title) return null;
       const description = stripHtml(result.snippet) ?? `Found from public web search.`;
       const inferredCompany =
-        company?.trim() || result.source || result.displayed_link || 'Unknown company';
+        company?.trim() ||
+        inferEmployerFromUrl(applyUrl) ||
+        result.source ||
+        result.displayed_link ||
+        'Unknown company';
       return {
         id: stableId('Web Search', applyUrl, title, inferredCompany),
         title,
@@ -2697,6 +2705,30 @@ async function searchAmazonCompanyJobs(
       source: 'Company Site',
     };
   });
+}
+
+export function inferEmployerFromUrl(rawUrl: string): string | null {
+  try {
+    const hostname = new URL(rawUrl).hostname.replace(/^www\./, '').toLowerCase();
+    const configuredCompany = COMPANY_DIRECTORY.find((entry) => {
+      if (entry.workday?.host.toLowerCase() === hostname) return true;
+      return entry.domains.some((domain) => {
+        const domainHost = domain.split('/')[0]?.toLowerCase();
+        return hostname === domainHost || hostname.endsWith(`.${domainHost}`);
+      });
+    });
+    if (configuredCompany) return configuredCompany.name;
+
+    const workdayTenant = hostname.match(/^([a-z0-9_-]+)\.wd\d+\.myworkdayjobs\.com$/i)?.[1];
+    if (!workdayTenant) return null;
+    return workdayTenant
+      .split(/[-_]+/)
+      .filter(Boolean)
+      .map((part) => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
+      .join(' ');
+  } catch {
+    return null;
+  }
 }
 
 function splitCombinedSetCookie(value: string): string[] {
