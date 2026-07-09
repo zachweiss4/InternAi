@@ -66,7 +66,7 @@ cp .env.example .env.local
 
 Fill in the required variables in `.env.local`, then run:
 
-
+```bash
 pnpm db:migrate:dev
 pnpm dev
 ```
