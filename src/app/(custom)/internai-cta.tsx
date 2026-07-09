@@ -2,46 +2,57 @@
 
 // @:user-owned
 
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function InternAICTA() {
   return (
-    <section id="cta" className="py-section-lg">
-      <div className="container-page">
-        <div className="relative overflow-hidden rounded-2xl border bg-card p-8 md:p-16 text-center">
-          {/* Ambient glow */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[radial-gradient(ellipse,_var(--brand-200)_0%,_transparent_70%)] opacity-50" />
+    <section id="cta" className="px-gutter pb-[clamp(4.5rem,9vw,8rem)] pt-section">
+      <div className="editorial-page">
+        <div className="grid gap-8 border-y border-[var(--editorial-line)] py-10 lg:grid-cols-12 lg:items-end lg:py-14">
+          <div className="lg:col-span-7">
+            <p className="editorial-kicker mb-4">Ready When You Are</p>
+            <h2 className="editorial-serif max-w-3xl text-[clamp(2.4rem,5.5vw,5rem)] leading-[0.92]">
+              Build a search that keeps its receipts.
+            </h2>
           </div>
 
-          <div className="relative z-10">
-            <p className="text-eyebrow mb-4">Start Today</p>
-            <h2 className="font-display text-[clamp(1.8rem,4vw,2.8rem)] tracking-tight leading-tight mb-4">
-              Your next internship is waiting
-            </h2>
-            <p className="text-body-lg text-muted-foreground max-w-xl mx-auto mb-8">
-              Join thousands of students who stopped wasting time on job boards and started landing
-              interviews. It only takes two minutes to set up.
+          <div className="lg:col-span-4 lg:col-start-9">
+            <p className="editorial-copy">
+              Start with a broad search, save the roles that feel real, and let daily alerts keep
+              watch while you focus on stronger applications.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <Button size="lg" asChild>
-                <a href="/signup">Get Started Free</a>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button
+                size="lg"
+                className="rounded-[6px] bg-[var(--editorial-coral)] px-6 text-[var(--editorial-ink)] shadow-none hover:bg-[var(--editorial-coral-soft)]"
+                asChild
+              >
+                <a href="/signup">
+                  Get started
+                  <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                </a>
               </Button>
-              <Button variant="outline" size="lg" asChild>
-                <a href="/pricing">View Pricing</a>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-[6px] border-[var(--editorial-line)] bg-[var(--editorial-cream)] px-6 text-[var(--editorial-ink)] shadow-none hover:bg-[var(--editorial-sage)]"
+                asChild
+              >
+                <a href="/pricing">View pricing</a>
               </Button>
             </div>
 
-            <p className="mt-6 text-sm text-muted-foreground">
+            <address className="mt-6 not-italic text-sm leading-6 text-[var(--editorial-muted)]">
               Questions?{' '}
               <a
                 href="mailto:support@internai.dev"
-                className="underline underline-offset-2 hover:text-foreground transition-colors"
+                className="editorial-underline underline hover:text-[var(--editorial-moss-deep)]"
               >
                 support@internai.dev
               </a>
-            </p>
+            </address>
           </div>
         </div>
       </div>

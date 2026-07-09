@@ -1,4 +1,4 @@
-// @:user-owned — global navigation rendered from src/lib/nav.ts.
+// @:user-owned - global navigation rendered from src/lib/nav.ts.
 
 'use client';
 
@@ -91,7 +91,7 @@ export function SiteNav() {
   // The brand links home, so drop a redundant '/' item from the rendered links.
   const primary = visibleItems('primary', isAuthenticated).filter((item) => item.href !== '/');
 
-  // Top-bar slots (links + `menu` dropdowns); `inline` renders, `overflow` → "More".
+  // Top-bar slots (links + `menu` dropdowns); `inline` renders, `overflow` becomes "More".
   const slots = buildPrimarySlots(primary);
   const { inline, overflow } = splitPrimarySlots(slots);
   const collapsedCount = primary.length;
@@ -108,17 +108,26 @@ export function SiteNav() {
   const isSlotActive = (slot: NavSlot) =>
     slot.type === 'link' ? isActive(slot.item.href) : slot.items.some((i) => isActive(i.href));
 
+  const navButtonClass =
+    'rounded-full px-4 text-[var(--editorial-ink)] shadow-none hover:bg-[var(--editorial-sage)] hover:text-[var(--editorial-ink)]';
+  const activeNavButtonClass =
+    'bg-[var(--editorial-ink)] text-[var(--editorial-paper)] hover:bg-[var(--editorial-moss-deep)] hover:text-[var(--editorial-paper)]';
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b border-[var(--editorial-line)] bg-[var(--editorial-paper)]/92 backdrop-blur supports-[backdrop-filter]:bg-[var(--editorial-paper)]/78">
       <nav
         aria-label="Primary"
-        className="mx-auto flex h-14 max-w-screen-xl items-center gap-2 px-4"
+        className="mx-auto flex h-16 max-w-[82rem] items-center gap-2 px-gutter"
       >
-        <Link href="/" className="mr-2 shrink-0 truncate text-base font-semibold tracking-tight">
-          {siteName}
+        <Link
+          href="/"
+          aria-label={`${siteName} home`}
+          className="mr-4 shrink-0 truncate text-[1.35rem] font-bold tracking-[-0.03em] text-[var(--editorial-ink)]"
+        >
+          internai.dev
         </Link>
 
-        {/* Desktop (md+): inline slots — direct links + `menu` dropdowns */}
+        {/* Desktop (md+): inline slots with direct links and `menu` dropdowns */}
         <div className="hidden items-center gap-1 md:flex">
           {inline.map((slot) =>
             slot.type === 'link' ? (
@@ -127,7 +136,7 @@ export function SiteNav() {
                 asChild
                 variant="ghost"
                 size="sm"
-                className={cn(isActive(slot.item.href) && 'bg-accent text-accent-foreground')}
+                className={cn(navButtonClass, isActive(slot.item.href) && activeNavButtonClass)}
               >
                 <Link
                   href={slot.item.href}
@@ -142,7 +151,7 @@ export function SiteNav() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={cn(isSlotActive(slot) && 'bg-accent text-accent-foreground')}
+                    className={cn(navButtonClass, isSlotActive(slot) && activeNavButtonClass)}
                   >
                     {slot.label}
                     <ChevronDown className="ml-1 size-4 opacity-60" aria-hidden />
@@ -171,7 +180,10 @@ export function SiteNav() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={cn(overflow.some(isSlotActive) && 'bg-accent text-accent-foreground')}
+                  className={cn(
+                    navButtonClass,
+                    overflow.some(isSlotActive) && activeNavButtonClass,
+                  )}
                 >
                   More
                   <ChevronDown className="ml-1 size-4 opacity-60" aria-hidden />
@@ -221,26 +233,36 @@ export function SiteNav() {
 
         {/* Right cluster: ml-auto pushes it right at every breakpoint */}
         <div className="ml-auto flex items-center gap-1">
-          {/* Desktop auth buttons — reactive via AuthNav */}
+          {/* Desktop auth buttons, reactive via AuthNav */}
           <div className="hidden md:flex">
             <AuthNav />
           </div>
 
           {/* Always visible */}
-          <ThemeToggle />
+          <ThemeToggle className="rounded-full text-[var(--editorial-ink)] hover:bg-[var(--editorial-sage)] hover:text-[var(--editorial-ink)]" />
 
-          {/* Mobile (below md): burger + drawer — only when there's something to collapse */}
+          {/* Mobile (below md): burger and drawer when there is something to collapse */}
           {collapsedCount > 0 && (
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full text-[var(--editorial-ink)] hover:bg-[var(--editorial-sage)] md:hidden"
+                >
                   <Menu />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" aria-describedby={undefined} className="flex flex-col">
+              <SheetContent
+                side="right"
+                aria-describedby={undefined}
+                className="flex flex-col border-[var(--editorial-line)] bg-[var(--editorial-paper)]"
+              >
                 <SheetHeader>
-                  <SheetTitle className="text-left">{siteName}</SheetTitle>
+                  <SheetTitle className="text-left font-body text-[var(--editorial-ink)]">
+                    internai.dev
+                  </SheetTitle>
                 </SheetHeader>
                 <nav aria-label="Mobile" className="mt-6 flex flex-col gap-1 overflow-y-auto">
                   {/* All slots, no overflow; a `menu` slot becomes a labeled section. */}
@@ -251,8 +273,8 @@ export function SiteNav() {
                         asChild
                         variant="ghost"
                         className={cn(
-                          'w-full justify-start',
-                          isActive(slot.item.href) && 'bg-accent text-accent-foreground',
+                          'w-full justify-start rounded-full text-[var(--editorial-ink)] hover:bg-[var(--editorial-sage)]',
+                          isActive(slot.item.href) && activeNavButtonClass,
                         )}
                       >
                         <Link
@@ -274,8 +296,8 @@ export function SiteNav() {
                             asChild
                             variant="ghost"
                             className={cn(
-                              'w-full justify-start pl-6',
-                              isActive(item.href) && 'bg-accent text-accent-foreground',
+                              'w-full justify-start rounded-full pl-6 text-[var(--editorial-ink)] hover:bg-[var(--editorial-sage)]',
+                              isActive(item.href) && activeNavButtonClass,
                             )}
                           >
                             <Link
@@ -290,7 +312,7 @@ export function SiteNav() {
                       </div>
                     ),
                   )}
-                  <div className="mt-2 border-t border-border pt-4">
+                  <div className="mt-2 border-t border-[var(--editorial-line)] pt-4">
                     <AuthNav />
                   </div>
                 </nav>
@@ -309,7 +331,7 @@ export function SiteFooter() {
   if (footer.length === 0) return null;
 
   return (
-    <footer className="border-t border-border">
+    <footer className="border-t border-[var(--editorial-line)] bg-[var(--editorial-paper)]">
       <nav
         aria-label="Footer"
         className="mx-auto flex max-w-screen-xl flex-wrap items-center gap-1 px-4 py-6 text-sm"

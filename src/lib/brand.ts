@@ -1,22 +1,22 @@
-// @:user-owned — brand identity. Edit freely. `site.ts` re-exports
+// @:user-owned - brand identity. Edit freely. `site.ts` re-exports
 // siteName/siteDescription; `manifest.ts` + `opengraph-image.tsx` read `brandVisual`.
 
 export const siteName = 'InternAI';
 export const siteDescription =
-  'Land your dream internship without the grind. AI-powered internship search automation for college students.';
+  'Source-first internship search that helps students find real postings, understand fit, and act with clarity.';
 
 // PWA + social-share colors. HEX only (the oklch() tokens in globals.css aren't
-// readable here) — set to match your brand seed.
+// readable here) - set to match your brand seed.
 export const brandVisual = {
   /** PWA browser-UI / status-bar color. */
-  themeColor: '#d97706',
+  themeColor: '#526b4b',
   /** PWA splash + install background. */
-  backgroundColor: '#fefce8',
+  backgroundColor: '#f2e7d2',
   /** Social-share (OG/Twitter) image. */
   og: {
-    background: '#0c0a09',
-    foreground: '#fef9ee',
+    background: '#263023',
+    foreground: '#fbf1df',
     /** Second line under the site name; '' hides it. */
-    tagline: 'Land your dream internship without the grind.',
+    tagline: 'Find work worth growing into.',
   },
 } as const;

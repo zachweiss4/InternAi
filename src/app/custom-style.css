@@ -1,3 +1,223 @@
-/* @:user-owned — your custom global CSS: keyframes, animation classes, one-off global
+/* @:user-owned - your custom global CSS: keyframes, animation classes, one-off global
  * styles, and @import your own .css files. Prefer tw-animate-css for motion (animate-in,
- * fade-in, slide-in-from-bottom-N, duration-*). globals.css is framework-owned — edit HERE. */
+ * fade-in, slide-in-from-bottom-N, duration-*). globals.css is framework-owned - edit HERE. */
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/space-grotesk-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url("/fonts/cormorant-garamond-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-style: italic;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url("/fonts/cormorant-garamond-italic-latin.woff2") format("woff2");
+}
+
+:root {
+  --editorial-paper: #f4f0ea;
+  --editorial-cream: #faf8f5;
+  --editorial-cream-deep: #ebe2d7;
+  --editorial-ink: #2b3a30;
+  --editorial-muted: #6f665c;
+  --editorial-moss: #435846;
+  --editorial-moss-deep: #2f4234;
+  --editorial-coral: #dd7a62;
+  --editorial-coral-soft: #efb29f;
+  --editorial-sage: #cbd5cb;
+  --editorial-line: #cfc5b6;
+  --editorial-shadow: 0 22px 50px rgb(67 53 32 / 0.14);
+}
+
+body:has(.editorial-home) {
+  background: var(--editorial-paper);
+}
+
+.editorial-home {
+  --background: var(--editorial-paper);
+  --foreground: var(--editorial-ink);
+  --card: var(--editorial-cream);
+  --card-foreground: var(--editorial-ink);
+  --popover: var(--editorial-cream);
+  --popover-foreground: var(--editorial-ink);
+  --primary: var(--editorial-moss-deep);
+  --primary-foreground: var(--editorial-cream);
+  --secondary: var(--editorial-sage);
+  --secondary-foreground: var(--editorial-ink);
+  --muted: var(--editorial-cream-deep);
+  --muted-foreground: var(--editorial-muted);
+  --accent: var(--editorial-sage);
+  --accent-foreground: var(--editorial-ink);
+  --border: var(--editorial-line);
+  --input: var(--editorial-line);
+  --ring: var(--editorial-moss);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgb(199 185 158 / 0.1) 0,
+      rgb(199 185 158 / 0.1) 1px,
+      transparent 1px,
+      transparent 34px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgb(199 185 158 / 0.08) 0,
+      rgb(199 185 158 / 0.08) 1px,
+      transparent 1px,
+      transparent 28px
+    ), var(--editorial-paper);
+  color: var(--editorial-ink);
+}
+
+.editorial-home::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  opacity: 0.38;
+  background:
+    linear-gradient(100deg, transparent 0 18%, rgb(251 241 223 / 0.52) 18% 19%, transparent 19%),
+    repeating-linear-gradient(
+      12deg,
+      rgb(49 70 50 / 0.03) 0,
+      rgb(49 70 50 / 0.03) 1px,
+      transparent 1px,
+      transparent 13px
+    );
+}
+
+.editorial-page {
+  width: min(100%, 78rem);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.25rem);
+}
+
+.editorial-kicker {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--editorial-moss-deep);
+}
+
+.editorial-serif {
+  font-family: var(--font-display);
+  font-weight: 650;
+  letter-spacing: 0;
+}
+
+.editorial-mark {
+  color: var(--editorial-coral);
+  font-style: italic;
+}
+
+.editorial-copy {
+  color: var(--editorial-muted);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.75;
+}
+
+.editorial-panel {
+  border: 1px solid var(--editorial-line);
+  border-radius: 8px;
+  background: var(--editorial-cream);
+  box-shadow: var(--editorial-shadow);
+}
+
+.editorial-feature-card {
+  min-height: clamp(17rem, 28vw, 22rem);
+}
+
+.editorial-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  color: var(--editorial-moss-deep);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.editorial-feature-card.is-moss {
+  border-color: rgb(244 240 234 / 0.24);
+  background: var(--editorial-moss);
+  color: var(--editorial-paper);
+}
+
+.editorial-feature-card.is-moss p {
+  color: rgb(244 240 234 / 0.78);
+}
+
+.editorial-feature-card.is-moss .editorial-pill {
+  border-color: rgb(244 240 234 / 0.34);
+  color: var(--editorial-paper);
+}
+
+.editorial-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgb(49 70 50 / 0.22);
+  border-radius: 999px;
+  background: rgb(214 222 200 / 0.62);
+  color: var(--editorial-moss-deep);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.editorial-rule {
+  border-top: 1px solid var(--editorial-line);
+}
+
+.editorial-underline {
+  text-decoration-color: var(--editorial-coral);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
+.editorial-clipping {
+  border: 1px solid rgb(49 70 50 / 0.2);
+  border-radius: 6px;
+  background: rgb(251 241 223 / 0.88);
+}
+
+.editorial-coral-strip {
+  background: var(--editorial-coral);
+  color: #3a2d25;
+}
+
+@media (max-width: 767px) {
+  .editorial-home {
+    background:
+      repeating-linear-gradient(
+        0deg,
+        rgb(199 185 158 / 0.08) 0,
+        rgb(199 185 158 / 0.08) 1px,
+        transparent 1px,
+        transparent 24px
+      ), var(--editorial-paper);
+  }
+}

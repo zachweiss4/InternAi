@@ -3,26 +3,27 @@ import { SearchIsland } from './search-island';
 
 export const metadata: Metadata = {
   title: 'Search Internships - InternAI',
-  description:
-    'Find the perfect internship using plain English. Describe what you are looking for and our AI will match you with the best opportunities.',
+  description: 'Find real internships from company sources, job feeds, and profile-aware filters.',
 };
 
 export default function SearchPage() {
   return (
-    <main className="container-page py-section">
-      <div className="mx-auto max-w-3xl">
-        {/* Page header */}
-        <div className="mb-10 space-y-3">
-          <p className="text-eyebrow text-brand-600">AI-Powered Search</p>
-          <h1 className="text-display">Find your perfect internship</h1>
-          <p className="text-body-lg text-muted-foreground max-w-xl">
-            Describe what you&apos;re looking for in plain language - role, location, salary, or
-            working style - and we&apos;ll match you with the best opportunities, ranked by
-            relevance.
-          </p>
-        </div>
+    <main className="editorial-home min-h-screen px-gutter py-section">
+      <div className="editorial-page">
+        <div className="grid gap-8 lg:grid-cols-[minmax(15rem,0.45fr)_minmax(0,0.9fr)] lg:items-start">
+          <header className="lg:pt-8">
+            <p className="editorial-kicker mb-4">Source-first search</p>
+            <h1 className="editorial-serif text-[clamp(2.5rem,5vw,4.9rem)] leading-[0.94]">
+              Find internships worth opening.
+            </h1>
+            <p className="editorial-copy mt-5 max-w-md">
+              Search by role, company, location, season, or working style. Keep resume matching off
+              for a clean source-first view, or turn it on when you want profile-aware ranking.
+            </p>
+          </header>
 
-        <SearchIsland />
+          <SearchIsland />
+        </div>
       </div>
     </main>
   );

@@ -125,13 +125,13 @@
    border role + dark mode from these (see the derived block below), so editing
    --brand-h ALONE recolors the entire site. Keep values in range. */
 :root {
-  --brand-h: 38; /* warm amber — aspirational, energetic, student-friendly */
-  --brand-c: 0.22; /* vivid but grounded, not neon */
-  --brand-l: 0.56; /* lighter base for a warm, optimistic feel */
-  --radius: 0.875rem; /* friendly and rounded, not clinical */
+  --brand-h: 135; /* moss green - grounded, calm, and less template-tech */
+  --brand-c: 0.11; /* tactile and mature instead of neon */
+  --brand-l: 0.44; /* deeper base so coral and paper accents can breathe */
+  --radius: 0.5rem; /* editorial and precise without feeling clinical */
 
-  --font-display: "Inter", "ui-sans-serif", "system-ui", sans-serif;
-  --font-body: "Inter", "ui-sans-serif", "system-ui", sans-serif;
+  --font-display: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", serif;
+  --font-body: "Space Grotesk", "Avenir Next", "Trebuchet MS", sans-serif;
 }
 /* === END internai-slot:brand_tokens === */
 

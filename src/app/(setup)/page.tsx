@@ -1,4 +1,4 @@
-// @:user-owned — starter home served at /. Replace it in place, or delete
+// @:user-owned - starter home served at /. Replace it in place, or delete
 // this route group before adding another page that resolves to /.
 
 import type { Metadata } from 'next';
@@ -20,12 +20,12 @@ export const metadata: Metadata = {
 
 export default function SetupPlaceholder() {
   return (
-    <>
+    <main className="editorial-home">
       <InternAIHero />
       <InternAIFeatures />
       <InternAIHowItWorks />
       <InternAIFAQ />
       <InternAICTA />
-    </>
+    </main>
   );
 }

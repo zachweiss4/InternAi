@@ -1,4 +1,4 @@
-// @:user-owned — light/dark theme toggle. Reusable; mounted in SiteNav.
+// @:user-owned - light/dark theme toggle. Reusable; mounted in SiteNav.
 
 'use client';
 
@@ -16,8 +16,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label="Toggle theme"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
     >
-      {/* Visibility is driven by the `.dark` class (set by next-themes outside React),
-          not React state — so server and client markup match and there's no flash. */}
+      {/* Visibility is driven by the `.dark` class, so server and client markup match. */}
       <Sun className="block dark:hidden" />
       <Moon className="hidden dark:block" />
     </Button>
