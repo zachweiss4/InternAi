@@ -9,6 +9,7 @@ let isActionablePosting: typeof import('@/lib/search/internships').isActionableP
 let isSpecificJobUrl: typeof import('@/lib/search/internships').isSpecificJobUrl;
 let inferEmployerFromUrl: typeof import('@/lib/search/internships').inferEmployerFromUrl;
 let mapTheirStackJob: typeof import('@/lib/search/internships').mapTheirStackJob;
+let shouldUseTheirStackBoost: typeof import('@/lib/search/internships').shouldUseTheirStackBoost;
 let workdayJobMatchesSearch: typeof import('@/lib/search/internships').workdayJobMatchesSearch;
 
 beforeAll(async () => {
@@ -19,6 +20,7 @@ beforeAll(async () => {
     isActionablePosting,
     isSpecificJobUrl,
     mapTheirStackJob,
+    shouldUseTheirStackBoost,
     workdayJobMatchesSearch,
   } = await import('@/lib/search/internships'));
 });
@@ -136,6 +138,13 @@ describe('individual listing validation', () => {
       postedAt: '2026-07-01T00:00:00.000Z',
       source: 'TheirStack',
     });
+  });
+
+  it('uses TheirStack as a focused boost instead of a broad default source', () => {
+    expect(shouldUseTheirStackBoost('internship', null, 0)).toBe(false);
+    expect(shouldUseTheirStackBoost('internship', 'Google', 25)).toBe(true);
+    expect(shouldUseTheirStackBoost('product management', null, 4)).toBe(true);
+    expect(shouldUseTheirStackBoost('product management', null, 20)).toBe(false);
   });
 
   it('rejects Workday internships that do not match a product-management search', () => {

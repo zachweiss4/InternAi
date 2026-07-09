@@ -504,6 +504,9 @@ const SOURCE_QUALITY: Record<InternshipSource, number> = {
   'Web Search': -4,
 };
 
+const THEIRSTACK_RESULT_LIMIT = 10;
+const THEIRSTACK_BOOST_RESULT_TARGET = 12;
+
 const PROFILE_STOP_TERMS = new Set([
   'ability',
   'academic',
@@ -969,6 +972,27 @@ function termsFor(query: string): string[] {
         !['the', 'and', 'for', 'with', 'intern', 'internship', 'remote', 'hybrid'].includes(term),
     );
   return [...new Set(baseTerms.flatMap((term) => [term, ...roleAliases(term)]))];
+}
+
+function isGenericInternshipQuery(query: string): boolean {
+  const normalized = normalizeText(query);
+  return (
+    !normalized ||
+    /^(intern|internship|internships|summer intern|summer internship|fall intern|fall internship)$/.test(
+      normalized,
+    )
+  );
+}
+
+export function shouldUseTheirStackBoost(
+  query: string,
+  company?: string | null,
+  preliminaryResultCount = 0,
+): boolean {
+  if (company?.trim()) return true;
+  if (isGenericInternshipQuery(query)) return false;
+  if (termsFor(query).length === 0) return false;
+  return preliminaryResultCount < THEIRSTACK_BOOST_RESULT_TARGET;
 }
 
 function queryWithSeason(query: string, season?: SearchOptions['season']): string {
@@ -2457,7 +2481,7 @@ async function searchTheirStack(
     ],
     property_exists_and: ['final_url'],
     url_domain_not: ['linkedin.com', 'indeed.com'],
-    limit: 20,
+    limit: THEIRSTACK_RESULT_LIMIT,
     page: 0,
   };
   if (role) body.job_title_or = [role];
@@ -3289,30 +3313,15 @@ async function searchCompanySitemapPages(
   return settled.flatMap((result) => (result.status === 'fulfilled' ? result.value : []));
 }
 
-export async function searchInternships(options: SearchOptions): Promise<InternshipSearchResult[]> {
-  const effectiveQuery = options.query.trim() || 'internship';
-  const providerQuery = queryWithSeason(effectiveQuery, options.season);
-  const providerQueries = generalQueryVariants(effectiveQuery, options.season);
-  const queryTerms = termsFor(effectiveQuery);
-  const profileSignals = profileSignalsFor(options.profile);
-  const profileLocations = profileLocationTerms(options.profile);
-  const settled = await Promise.allSettled([
-    searchCompanyDirectFeeds(providerQuery, options.company),
-    searchCompanyBoards(options.company),
-    searchCompanySitePages(providerQuery, options.company),
-    searchCompanySitemapPages(providerQuery, options.company),
-    ...providerQueries
-      .slice(0, 2)
-      .map((query) => searchGoogleJobs(query, options.location, options.company, options.season)),
-    ...providerQueries
-      .slice(0, 2)
-      .map((query) => searchAdzuna(query, options.location, options.company, options.season)),
-    searchTheirStack(effectiveQuery, options.location, options.company),
-    searchWebResults(effectiveQuery, options.location, options.company, options.season),
-  ]);
-
-  const raw = settled.flatMap((result) => (result.status === 'fulfilled' ? result.value : []));
-  const scored = raw
+function scoreAndFilterResults(
+  raw: InternshipSearchResult[],
+  options: SearchOptions,
+  effectiveQuery: string,
+  queryTerms: string[],
+  profileSignals: ProfileSignal[],
+  profileLocations: string[],
+): ScoredInternshipSearchResult[] {
+  return raw
     .filter((result) => result.title && result.company && result.applyUrl)
     .filter((result) => !usesTemporarilyDisabledHost(result))
     .filter((result) => matchesLocationFilter(result.location, options.location, result.modality))
@@ -3338,6 +3347,57 @@ export async function searchInternships(options: SearchOptions): Promise<Interns
       (result) =>
         result.matchScore >= 28 && isInternshipFocused(result) && isActionablePosting(result),
     );
+}
+
+export async function searchInternships(options: SearchOptions): Promise<InternshipSearchResult[]> {
+  const effectiveQuery = options.query.trim() || 'internship';
+  const providerQuery = queryWithSeason(effectiveQuery, options.season);
+  const providerQueries = generalQueryVariants(effectiveQuery, options.season);
+  const queryTerms = termsFor(effectiveQuery);
+  const profileSignals = profileSignalsFor(options.profile);
+  const profileLocations = profileLocationTerms(options.profile);
+  const settled = await Promise.allSettled([
+    searchCompanyDirectFeeds(providerQuery, options.company),
+    searchCompanyBoards(options.company),
+    searchCompanySitePages(providerQuery, options.company),
+    searchCompanySitemapPages(providerQuery, options.company),
+    ...providerQueries
+      .slice(0, 2)
+      .map((query) => searchGoogleJobs(query, options.location, options.company, options.season)),
+    ...providerQueries
+      .slice(0, 2)
+      .map((query) => searchAdzuna(query, options.location, options.company, options.season)),
+    searchWebResults(effectiveQuery, options.location, options.company, options.season),
+  ]);
+
+  let raw = settled.flatMap((result) => (result.status === 'fulfilled' ? result.value : []));
+  let scored = scoreAndFilterResults(
+    raw,
+    options,
+    effectiveQuery,
+    queryTerms,
+    profileSignals,
+    profileLocations,
+  );
+
+  if (shouldUseTheirStackBoost(effectiveQuery, options.company, scored.length)) {
+    const theirStackResults = await searchTheirStack(
+      effectiveQuery,
+      options.location,
+      options.company,
+    );
+    if (theirStackResults.length > 0) {
+      raw = [...raw, ...theirStackResults];
+      scored = scoreAndFilterResults(
+        raw,
+        options,
+        effectiveQuery,
+        queryTerms,
+        profileSignals,
+        profileLocations,
+      );
+    }
+  }
 
   const deduped = dedupe(scored);
 
